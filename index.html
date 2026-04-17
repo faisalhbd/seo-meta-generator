@@ -146,6 +146,41 @@
     align-items: stretch;
   }
 
+  /* API Key row */
+  .apikey-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .apikey-row input[type="password"],
+  .apikey-row input[type="text"] {
+    flex: 1;
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+
+  .apikey-row input:focus { border-color: var(--blue); }
+
+  .toggle-eye {
+    background: none;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 1;
+  }
+
   input[type="text"] {
     flex: 1;
     font-size: 15px;
@@ -159,10 +194,7 @@
     transition: border-color 0.15s;
   }
 
-  input[type="text"]:focus {
-    border-color: var(--blue);
-  }
-
+  input[type="text"]:focus { border-color: var(--blue); }
   input[type="text"]::placeholder { color: var(--text3); }
 
   .btn-generate {
@@ -177,15 +209,73 @@
     white-space: nowrap;
     font-family: inherit;
     transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .btn-generate:hover { background: var(--blue-dark); }
   .btn-generate:active { transform: scale(0.97); }
+  .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
   .hint {
     font-size: 12px;
     color: var(--text3);
     margin-top: 8px;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(230,241,251,0.3);
+    border-top-color: #E6F1FB;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .btn-generate.loading .spinner { display: block; }
+  .btn-generate.loading .btn-label { opacity: 0.7; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Loading skeleton */
+  .skeleton-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .skeleton-line {
+    height: 14px;
+    background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .skeleton-line.short { width: 40%; }
+  .skeleton-line.medium { width: 70%; }
+  .skeleton-line.full { width: 100%; }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Error banner */
+  .error-banner {
+    background: var(--red-bg);
+    color: var(--red);
+    border: 0.5px solid var(--red);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 1.25rem;
+    display: none;
   }
 
   .serp-box {
@@ -207,6 +297,12 @@
     padding: 14px 16px;
     background: var(--surface2);
     position: relative;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .variant-header {
@@ -296,6 +392,17 @@
     line-height: 1.5;
   }
 
+  /* AI badge */
+  .ai-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--blue-light);
+    color: var(--blue);
+    border-radius: 20px;
+    font-weight: 500;
+    margin-left: 6px;
+  }
+
   footer {
     text-align: center;
     padding: 2rem 1.5rem;
@@ -305,11 +412,12 @@
   }
 
   #output { display: none; }
+  #loadingSection { display: none; }
 
   @media (max-width: 540px) {
     h1 { font-size: 22px; }
     .input-row { flex-direction: column; }
-    .btn-generate { width: 100%; padding: 13px; }
+    .btn-generate { width: 100%; padding: 13px; justify-content: center; }
     main { padding: 2rem 1rem 3rem; }
   }
 </style>
@@ -323,21 +431,55 @@
     </div>
     SEO Meta Generator
   </div>
-  <span class="header-badge">Free Tool</span>
+  <span class="header-badge">AI Powered</span>
 </header>
 
 <main>
   <h1>SEO Meta Description Generator</h1>
-  <p class="subtitle">Enter your page title — get 4 SEO-optimized descriptions instantly.<br>No API key. No login. Max 145 characters. Copy &amp; paste into Blogger.</p>
+  <p class="subtitle">Page title দাও — Groq AI দিয়ে প্রতিবার unique 4টা description পাবে।<br>Max 145 characters. Google-friendly. Copy &amp; paste into Blogger.</p>
+
+  <div class="card">
+    <div class="section-label">Groq API Key</div>
+    <div class="apikey-row">
+      <input type="password" id="apiKeyInput" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <button class="toggle-eye" onclick="toggleKeyVisibility()" title="Show/hide key">👁</button>
+    </div>
+    <p class="hint" style="margin-top:0;margin-bottom:0;">
+      Free key: <a href="https://console.groq.com/keys" target="_blank" style="color:var(--blue);">console.groq.com/keys</a> — key browser-এ থাকে, কোথাও পাঠানো হয় না।
+    </p>
+  </div>
 
   <div class="card">
     <div class="section-label">Your page title</div>
     <div class="input-row">
       <input type="text" id="titleInput"
         placeholder="Dumpster Rental Queen Creek, AZ 85142 | Pro Dumpster Rental" />
-      <button class="btn-generate" onclick="generate()">Generate</button>
+      <button class="btn-generate" id="genBtn" onclick="generate()">
+        <div class="spinner"></div>
+        <span class="btn-label">Generate</span>
+      </button>
     </div>
     <p class="hint">Tip: "Service + City, State ZIP | Brand Name" format-এ title দাও — best result পাবে।</p>
+  </div>
+
+  <div id="errorBanner" class="error-banner"></div>
+
+  <!-- Loading skeleton -->
+  <div id="loadingSection">
+    <div class="skeleton-card">
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line full"></div>
+      <div class="skeleton-line medium"></div>
+    </div>
+    <div class="skeleton-card">
+      <div class="skeleton-line short"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+        <div class="skeleton-line full"></div>
+        <div class="skeleton-line full"></div>
+        <div class="skeleton-line full"></div>
+        <div class="skeleton-line full"></div>
+      </div>
+    </div>
   </div>
 
   <div id="output">
@@ -351,7 +493,11 @@
     </div>
 
     <div class="card">
-      <div class="section-label">4 optimized variants — best একটা copy করো</div>
+      <div class="section-label">
+        4 AI-generated unique variants
+        <span class="ai-badge">Groq AI</span>
+        — best একটা copy করো
+      </div>
       <div class="variants-grid" id="variantsGrid"></div>
     </div>
 
@@ -380,23 +526,24 @@
 </main>
 
 <footer>
-  Free SEO tool — no data stored, no API calls, works 100% offline.
+  Powered by Groq AI (llama-3.3-70b-versatile) — API key locally stored, no server calls.
 </footer>
 
 <script>
-function parseTitle(title) {
-  const m = title.match(/([A-Za-z\s]+),?\s*([A-Z]{2})\s*(\d{5})/);
-  const city = m ? m[1].trim() : '';
-  const state = m ? m[2] : '';
-  const zip = m ? m[3] : '';
-  const parts = title.split('|');
-  const brand = parts.length > 1 ? parts[1].trim() : '';
-  const rawService = parts[0].replace(/,?\s*[A-Z]{2}\s*\d{5}/, '').trim();
-  const loc = city && state ? city + ', ' + state : rawService;
-  const locFull = zip ? loc + ' ' + zip : loc;
-  return { city, state, zip, brand, rawService, loc, locFull };
+// ── Persist API key in localStorage ──────────────────────────────────────────
+const KEY_STORE = 'groq_api_key_meta_gen';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(KEY_STORE);
+  if (saved) document.getElementById('apiKeyInput').value = saved;
+});
+
+function toggleKeyVisibility() {
+  const inp = document.getElementById('apiKeyInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
 }
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function trunc(str, max) {
   if (str.length <= max) return str;
   return str.slice(0, max - 1).trimEnd() + '…';
@@ -408,62 +555,123 @@ function charStatus(len) {
   return ['bad', '#A32D2D'];
 }
 
-function buildVariants(title) {
-  const { loc, locFull, brand, rawService } = parseTitle(title);
-  const svc = brand || rawService || 'Pro Dumpster Rental';
-  const area = locFull || rawService;
-
-  return [
-    {
-      label: 'Action + local + CTA',
-      text: trunc(`Need a dumpster in ${area}? ${svc} offers same-day delivery, affordable rates & reliable pickup. Call now for a free quote!`, 145)
-    },
-    {
-      label: 'Benefit-first',
-      text: trunc(`Affordable dumpster rental in ${area}. Fast delivery, flexible sizes & no hidden fees. Book ${svc} today — serving ${loc} area.`, 145)
-    },
-    {
-      label: 'Keyword-dense',
-      text: trunc(`${svc} — ${area}. Best rates on 10–40 yard dumpsters. Residential & commercial. Same-day available. Get your free quote now!`, 145)
-    },
-    {
-      label: 'Trust + urgency',
-      text: trunc(`Top-rated dumpster rental in ${area}. ${svc} — licensed, insured & local. Flexible rental periods. Request a free quote today!`, 145)
-    }
-  ];
+function showError(msg) {
+  const el = document.getElementById('errorBanner');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 8000);
 }
 
-function copyText(idx) {
-  const el = document.getElementById('vtext_' + idx);
-  const btn = document.getElementById('vcopy_' + idx);
-  navigator.clipboard.writeText(el.textContent).then(() => {
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.classList.remove('copied');
-    }, 2000);
+function setLoading(on) {
+  const btn = document.getElementById('genBtn');
+  const loadSec = document.getElementById('loadingSection');
+  if (on) {
+    btn.classList.add('loading');
+    btn.disabled = true;
+    document.getElementById('output').style.display = 'none';
+    loadSec.style.display = 'block';
+    document.getElementById('errorBanner').style.display = 'none';
+  } else {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    loadSec.style.display = 'none';
+  }
+}
+
+// ── Groq API call ─────────────────────────────────────────────────────────────
+async function callGroq(apiKey, title) {
+  const prompt = `You are an expert SEO copywriter specializing in local service businesses (dumpster rental, junk removal, construction services, etc).
+
+Generate EXACTLY 4 unique meta descriptions for this page title:
+"${title}"
+
+Rules:
+- Each description MUST be under 145 characters (count carefully)
+- Each must use a COMPLETELY different angle/style/phrasing — no repeated phrases across variants
+- Include local city/ZIP/state naturally where present in the title
+- Include a compelling CTA in each
+- Do NOT use the same opening word or phrase in any two variants
+- Variant 1: Action-first + local urgency (start with a verb like "Need", "Get", "Rent", "Book")
+- Variant 2: Benefit-driven + trust signals (focus on value: affordable, reliable, fast)
+- Variant 3: Keyword-dense + service-specific (mention sizes, types, commercial/residential)
+- Variant 4: Social proof / trust + urgency angle (top-rated, licensed, insured, limited slots)
+
+Respond ONLY with valid JSON, no markdown, no explanation:
+{"variants":[
+  {"label":"Action + Local + CTA","text":"..."},
+  {"label":"Benefit-Driven + Trust","text":"..."},
+  {"label":"Keyword-Dense + Service","text":"..."},
+  {"label":"Social Proof + Urgency","text":"..."}
+]}`;
+
+  const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      temperature: 1.1,        // high temp = more unique each time
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }]
+    })
   });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `HTTP ${resp.status}`);
+  }
+
+  const data = await resp.json();
+  const raw = data.choices?.[0]?.message?.content?.trim() || '';
+
+  // Strip markdown fences if any
+  const clean = raw.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
+  const parsed = JSON.parse(clean);
+  return parsed.variants;
 }
 
-function generate() {
-  const title = document.getElementById('titleInput').value.trim();
-  if (!title) return;
+// ── Main generate ─────────────────────────────────────────────────────────────
+async function generate() {
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  const title  = document.getElementById('titleInput').value.trim();
 
-  const variants = buildVariants(title);
-  const best = variants[0].text;
+  if (!apiKey) { showError('Groq API key দাও। console.groq.com/keys থেকে free-তে নাও।'); return; }
+  if (!title)  { showError('Page title দাও।'); return; }
 
+  // Save key
+  localStorage.setItem(KEY_STORE, apiKey);
+
+  setLoading(true);
+
+  let variants;
+  try {
+    variants = await callGroq(apiKey, title);
+  } catch (e) {
+    setLoading(false);
+    showError('Groq API error: ' + e.message);
+    return;
+  }
+
+  setLoading(false);
+
+  // Truncate safety pass (AI sometimes goes slightly over)
+  variants = variants.map(v => ({ ...v, text: trunc(v.text, 145) }));
+
+  // SERP preview
   const displayTitle = title.length > 62 ? title.slice(0, 59) + '…' : title;
   document.getElementById('serpTitle').textContent = displayTitle;
-  document.getElementById('serpDesc').textContent = best;
+  document.getElementById('serpDesc').textContent = variants[0].text;
 
+  // Render variants
   let html = '';
   variants.forEach((v, i) => {
     const len = v.text.length;
     const [status, barColor] = charStatus(len);
     const pct = Math.min(100, Math.round((len / 145) * 100));
     html += `
-      <div class="variant-item">
+      <div class="variant-item" style="animation-delay:${i * 80}ms">
         <div class="variant-header">
           <span class="variant-label-text">${v.label}</span>
           <span class="badge badge-${status}">${len} / 145 chars</span>
@@ -479,6 +687,20 @@ function generate() {
   document.getElementById('variantsGrid').innerHTML = html;
   document.getElementById('output').style.display = 'block';
   document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Copy ──────────────────────────────────────────────────────────────────────
+function copyText(idx) {
+  const el  = document.getElementById('vtext_' + idx);
+  const btn = document.getElementById('vcopy_' + idx);
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
 }
 
 document.getElementById('titleInput').addEventListener('keydown', function(e) {
