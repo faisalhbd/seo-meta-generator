@@ -1,1 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Meta Description Generator | Free Tool</title>
+<meta name="description" content="Free SEO meta description generator. Enter your page title and get 4 optimized descriptions under 145 characters instantly. No API key needed.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --surface2: #f1f0eb;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a1a;
+    --text2: #666660;
+    --text3: #999994;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-dark: #0C447C;
+    --green: #27500A;
+    --green-bg: #EAF3DE;
+    --amber: #633806;
+    --amber-bg: #FAEEDA;
+    --red: #791F1F;
+    --red-bg: #FCEBEB;
+    --teal: #0F6E56;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242422;
+      --surface2: #2e2e2c;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --text: #f0efea;
+      --text2: #a0a09a;
+      --text3: #6a6a64;
+      --blue: #85B7EB;
+      --blue-light: #042C53;
+      --blue-dark: #B5D4F4;
+      --green: #C0DD97;
+      --green-bg: #173404;
+      --amber: #FAC775;
+      --amber-bg: #412402;
+      --red: #F09595;
+      --red-bg: #501313;
+      --teal: #5DCAA5;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--blue);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 16px; height: 16px; fill: #fff; }
+
+  .header-badge {
+    font-size: 12px;
+    padding: 3px 10px;
+    background: var(--green-bg);
+    color: var(--green);
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text2);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    font-size: 15px;
+    padding: 11px 14px;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--blue);
+  }
+
+  input[type="text"]::placeholder { color: var(--text3); }
+
+  .btn-generate {
+    padding: 11px 22px;
+    background: var(--blue);
+    color: #E6F1FB;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .btn-generate:hover { background: var(--blue-dark); }
+  .btn-generate:active { transform: scale(0.97); }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 8px;
+  }
+
+  .serp-box {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+  }
+
+  .serp-url { font-size: 12px; color: var(--teal); margin-bottom: 3px; }
+  .serp-title { font-size: 19px; color: var(--blue); font-weight: 400; margin-bottom: 5px; line-height: 1.3; cursor: pointer; }
+  .serp-title:hover { text-decoration: underline; }
+  .serp-desc { font-size: 13px; color: var(--text2); line-height: 1.55; }
+
+  .variants-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  .variant-item {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    background: var(--surface2);
+    position: relative;
+  }
+
+  .variant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .variant-label-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: 20px;
+  }
+
+  .badge-ok { background: var(--green-bg); color: var(--green); }
+  .badge-warn { background: var(--amber-bg); color: var(--amber); }
+  .badge-bad { background: var(--red-bg); color: var(--red); }
+
+  .variant-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+
+  .bar-wrap {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  .bar-fill {
+    height: 4px;
+    border-radius: 2px;
+    transition: width 0.4s, background 0.4s;
+  }
+
+  .copy-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    background: var(--surface);
+    border: 0.5px solid var(--border2);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text2);
+    font-family: inherit;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .copy-btn:hover { color: var(--text); background: var(--surface2); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green-bg); }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .tip-item {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+
+  .tip-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .tip-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    font-size: 12px;
+    color: var(--text3);
+    border-top: 0.5px solid var(--border);
+  }
+
+  #output { display: none; }
+
+  @media (max-width: 540px) {
+    h1 { font-size: 22px; }
+    .input-row { flex-direction: column; }
+    .btn-generate { width: 100%; padding: 13px; }
+    main { padding: 2rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16"><path d="M2 2h12v2H2zm0 3h8v2H2zm0 3h12v2H2zm0 3h6v2H2z"/></svg>
+    </div>
+    SEO Meta Generator
+  </div>
+  <span class="header-badge">Free Tool</span>
+</header>
+
+<main>
+  <h1>SEO Meta Description Generator</h1>
+  <p class="subtitle">Enter your page title — get 4 SEO-optimized descriptions instantly.<br>No API key. No login. Max 145 characters. Copy &amp; paste into Blogger.</p>
+
+  <div class="card">
+    <div class="section-label">Your page title</div>
+    <div class="input-row">
+      <input type="text" id="titleInput"
+        placeholder="Dumpster Rental Queen Creek, AZ 85142 | Pro Dumpster Rental" />
+      <button class="btn-generate" onclick="generate()">Generate</button>
+    </div>
+    <p class="hint">Tip: "Service + City, State ZIP | Brand Name" format-এ title দাও — best result পাবে।</p>
+  </div>
+
+  <div id="output">
+    <div class="card">
+      <div class="section-label">Google SERP preview</div>
+      <div class="serp-box">
+        <div class="serp-url" id="serpUrl">https://yourblog.blogspot.com/</div>
+        <div class="serp-title" id="serpTitle">—</div>
+        <div class="serp-desc" id="serpDesc">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">4 optimized variants — best একটা copy করো</div>
+      <div class="variants-grid" id="variantsGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Blogger-এ কোথায় paste করবে</div>
+      <div class="tips-grid">
+        <div class="tip-item">
+          <div class="tip-title">Step 1 — Settings</div>
+          <div class="tip-desc">Blogger Dashboard → Settings → Meta tags section খোলো।</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-title">Step 2 — Enable</div>
+          <div class="tip-desc">"Enable search description" toggle ON করো।</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-title">Step 3 — Paste</div>
+          <div class="tip-desc">Search description box-এ copy করা text paste করো।</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-title">Step 4 — Save</div>
+          <div class="tip-desc">Save করো। ৩-৭ দিনে Google নতুন description দেখাবে।</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Free SEO tool — no data stored, no API calls, works 100% offline.
+</footer>
+
+<script>
+function parseTitle(title) {
+  const m = title.match(/([A-Za-z\s]+),?\s*([A-Z]{2})\s*(\d{5})/);
+  const city = m ? m[1].trim() : '';
+  const state = m ? m[2] : '';
+  const zip = m ? m[3] : '';
+  const parts = title.split('|');
+  const brand = parts.length > 1 ? parts[1].trim() : '';
+  const rawService = parts[0].replace(/,?\s*[A-Z]{2}\s*\d{5}/, '').trim();
+  const loc = city && state ? city + ', ' + state : rawService;
+  const locFull = zip ? loc + ' ' + zip : loc;
+  return { city, state, zip, brand, rawService, loc, locFull };
+}
+
+function trunc(str, max) {
+  if (str.length <= max) return str;
+  return str.slice(0, max - 1).trimEnd() + '…';
+}
+
+function charStatus(len) {
+  if (len <= 145) return ['ok', '#3B6D11'];
+  if (len <= 155) return ['warn', '#854F0B'];
+  return ['bad', '#A32D2D'];
+}
+
+function buildVariants(title) {
+  const { loc, locFull, brand, rawService } = parseTitle(title);
+  const svc = brand || rawService || 'Pro Dumpster Rental';
+  const area = locFull || rawService;
+
+  return [
+    {
+      label: 'Action + local + CTA',
+      text: trunc(`Need a dumpster in ${area}? ${svc} offers same-day delivery, affordable rates & reliable pickup. Call now for a free quote!`, 145)
+    },
+    {
+      label: 'Benefit-first',
+      text: trunc(`Affordable dumpster rental in ${area}. Fast delivery, flexible sizes & no hidden fees. Book ${svc} today — serving ${loc} area.`, 145)
+    },
+    {
+      label: 'Keyword-dense',
+      text: trunc(`${svc} — ${area}. Best rates on 10–40 yard dumpsters. Residential & commercial. Same-day available. Get your free quote now!`, 145)
+    },
+    {
+      label: 'Trust + urgency',
+      text: trunc(`Top-rated dumpster rental in ${area}. ${svc} — licensed, insured & local. Flexible rental periods. Request a free quote today!`, 145)
+    }
+  ];
+}
+
+function copyText(idx) {
+  const el = document.getElementById('vtext_' + idx);
+  const btn = document.getElementById('vcopy_' + idx);
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function generate() {
+  const title = document.getElementById('titleInput').value.trim();
+  if (!title) return;
+
+  const variants = buildVariants(title);
+  const best = variants[0].text;
+
+  const displayTitle = title.length > 62 ? title.slice(0, 59) + '…' : title;
+  document.getElementById('serpTitle').textContent = displayTitle;
+  document.getElementById('serpDesc').textContent = best;
+
+  let html = '';
+  variants.forEach((v, i) => {
+    const len = v.text.length;
+    const [status, barColor] = charStatus(len);
+    const pct = Math.min(100, Math.round((len / 145) * 100));
+    html += `
+      <div class="variant-item">
+        <div class="variant-header">
+          <span class="variant-label-text">${v.label}</span>
+          <span class="badge badge-${status}">${len} / 145 chars</span>
+        </div>
+        <div class="variant-text" id="vtext_${i}">${v.text}</div>
+        <div class="bar-wrap">
+          <div class="bar-fill" style="width:${pct}%;background:${barColor};"></div>
+        </div>
+        <button class="copy-btn" id="vcopy_${i}" onclick="copyText(${i})">Copy</button>
+      </div>`;
+  });
+
+  document.getElementById('variantsGrid').innerHTML = html;
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('titleInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') generate();
+});
+</script>
+</body>
+</html>
