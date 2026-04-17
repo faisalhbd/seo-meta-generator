@@ -550,8 +550,9 @@ function trunc(str, max) {
 }
 
 function charStatus(len) {
-  if (len <= 145) return ['ok', '#3B6D11'];
-  if (len <= 155) return ['warn', '#854F0B'];
+  if (len >= 140 && len <= 155) return ['ok', '#3B6D11'];
+  if (len >= 120 && len < 140) return ['warn', '#854F0B'];
+  if (len > 155 && len <= 160) return ['warn', '#854F0B'];
   return ['bad', '#A32D2D'];
 }
 
@@ -580,28 +581,41 @@ function setLoading(on) {
 
 // ── Groq API call ─────────────────────────────────────────────────────────────
 async function callGroq(apiKey, title) {
-  const prompt = `You are an expert SEO copywriter specializing in local service businesses (dumpster rental, junk removal, construction services, etc).
+  // Inject random token so every call produces fresh output
+  const nonce = Math.random().toString(36).slice(2, 10) + Date.now();
+
+  const prompt = `You are a senior SEO copywriter for local service businesses (dumpster rental, junk removal, moving, HVAC, plumbing, etc). Session: ${nonce}
 
 Generate EXACTLY 4 unique meta descriptions for this page title:
 "${title}"
 
-Rules:
-- Each description MUST be under 145 characters (count carefully)
-- Each must use a COMPLETELY different angle/style/phrasing — no repeated phrases across variants
-- Include local city/ZIP/state naturally where present in the title
-- Include a compelling CTA in each
-- Do NOT use the same opening word or phrase in any two variants
-- Variant 1: Action-first + local urgency (start with a verb like "Need", "Get", "Rent", "Book")
-- Variant 2: Benefit-driven + trust signals (focus on value: affordable, reliable, fast)
-- Variant 3: Keyword-dense + service-specific (mention sizes, types, commercial/residential)
-- Variant 4: Social proof / trust + urgency angle (top-rated, licensed, insured, limited slots)
+STRICT LENGTH RULE — THIS IS CRITICAL:
+- Each description MUST be between 140 and 155 characters INCLUSIVE
+- Count every character including spaces and punctuation
+- If a draft is under 140 chars, ADD more detail (benefits, location specifics, urgency words)
+- If a draft is over 155 chars, trim it — never exceed 155
+- DO NOT write short 40-80 character descriptions — they are USELESS for SEO
 
-Respond ONLY with valid JSON, no markdown, no explanation:
+CONTENT RULES:
+- Each variant must use a COMPLETELY different angle, tone, and sentence structure
+- Do NOT start any two variants with the same word
+- Extract and use the city name, state, and ZIP code from the title naturally
+- Every variant needs ONE strong CTA (call to action)
+- No filler words; make every character count
+- ZERO repeated phrases across the 4 variants
+
+VARIANT ANGLES (follow strictly):
+1. "Action + Local + CTA" — Start with an imperative verb (Rent, Get, Book, Need, Order). Lead with the service + location. Close with urgency CTA. Pack in 2-3 benefits.
+2. "Benefit-Driven + Trust" — Open with a customer benefit or value prop. Mention pricing signal (affordable, low-cost, competitive rates). Add trust word (reliable, licensed, insured). End with CTA.
+3. "Keyword-Dense + Service" — Front-load primary keywords. Mention dumpster sizes (10, 15, 20, 30, 40 yard) or service variants. Specify residential AND commercial. Include location. CTA at end.
+4. "Social Proof + Urgency" — Start with a trust/authority signal (Top-rated, Trusted by, #1 in, 500+ customers). Add a scarcity or urgency element (limited availability, same-day, book today). Include location.
+
+RESPOND ONLY WITH VALID JSON — no markdown fences, no explanation, no preamble:
 {"variants":[
-  {"label":"Action + Local + CTA","text":"..."},
-  {"label":"Benefit-Driven + Trust","text":"..."},
-  {"label":"Keyword-Dense + Service","text":"..."},
-  {"label":"Social Proof + Urgency","text":"..."}
+  {"label":"Action + Local + CTA","text":"EXACTLY 140-155 chars here"},
+  {"label":"Benefit-Driven + Trust","text":"EXACTLY 140-155 chars here"},
+  {"label":"Keyword-Dense + Service","text":"EXACTLY 140-155 chars here"},
+  {"label":"Social Proof + Urgency","text":"EXACTLY 140-155 chars here"}
 ]}`;
 
   const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -612,8 +626,9 @@ Respond ONLY with valid JSON, no markdown, no explanation:
     },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
-      temperature: 1.1,        // high temp = more unique each time
-      max_tokens: 600,
+      temperature: 1.3,        // max diversity
+      top_p: 0.95,
+      max_tokens: 700,
       messages: [{ role: 'user', content: prompt }]
     })
   });
@@ -656,8 +671,8 @@ async function generate() {
 
   setLoading(false);
 
-  // Truncate safety pass (AI sometimes goes slightly over)
-  variants = variants.map(v => ({ ...v, text: trunc(v.text, 145) }));
+  // Soft safety trim — only cut if wildly over (AI occasionally drifts past 160)
+  variants = variants.map(v => ({ ...v, text: v.text.length > 160 ? trunc(v.text, 158) : v.text }));
 
   // SERP preview
   const displayTitle = title.length > 62 ? title.slice(0, 59) + '…' : title;
@@ -669,12 +684,12 @@ async function generate() {
   variants.forEach((v, i) => {
     const len = v.text.length;
     const [status, barColor] = charStatus(len);
-    const pct = Math.min(100, Math.round((len / 145) * 100));
+    const pct = Math.min(100, Math.round((len / 155) * 100));
     html += `
       <div class="variant-item" style="animation-delay:${i * 80}ms">
         <div class="variant-header">
           <span class="variant-label-text">${v.label}</span>
-          <span class="badge badge-${status}">${len} / 145 chars</span>
+          <span class="badge badge-${status}">${len} / 155 chars</span>
         </div>
         <div class="variant-text" id="vtext_${i}">${v.text}</div>
         <div class="bar-wrap">
