@@ -496,7 +496,7 @@
       <div class="section-label">
         4 AI-generated unique variants
         <span class="ai-badge">Groq AI</span>
-        — best একটা copy করো
+        — best একটা copy করো &nbsp;<span id="templateBadge" style="font-size:10px;color:var(--text3);"></span>
       </div>
       <div class="variants-grid" id="variantsGrid"></div>
     </div>
@@ -579,44 +579,327 @@ function setLoading(on) {
   }
 }
 
+// ── 10 Rotating Prompt Templates (dumpster/construction/commercial SEO) ───────
+// Each template has a different copywriting framework so the AI never repeats itself.
+// Keywords researched: roll-off dumpster rental, construction dumpster, debris removal,
+// junk removal, same-day dumpster, commercial dumpster service, concrete disposal,
+// roofing debris, residential cleanout, yard waste removal, cheap dumpster rental,
+// dumpster rental near me, bin rental, waste management, affordable dumpster.
+
+const PROMPT_TEMPLATES = [
+
+  // ── Template 1: AIDA (Attention → Interest → Desire → Action) ───────────────
+  (title, loc) => `You are a direct-response SEO copywriter. Use the AIDA framework (Attention, Interest, Desire, Action) to write 4 meta descriptions.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+HIGH-VALUE DUMPSTER/CONSTRUCTION KEYWORDS TO USE (pick different ones per variant):
+roll-off dumpster rental, same-day delivery, concrete & debris removal, roofing waste,
+construction site cleanup, residential & commercial, 10-40 yard dumpsters, licensed & insured,
+no hidden fees, flexible rental periods, next-day pickup, demolition debris, junk hauling.
+
+VARIANT REQUIREMENTS:
+V1 "AIDA – Attention": Open with a bold problem statement or surprising stat. Hook the reader. End with a strong CTA.
+V2 "AIDA – Interest/Desire": Focus on convenience + speed. Same-day or next-day delivery angle. Mention sizes available.
+V3 "AIDA – Trust Build": Lead with credibility (licensed, insured, locally owned). Mention service range. Close with CTA.
+V4 "AIDA – Action/Urgency": Pure conversion copy. Scarcity, urgency, or limited-time angle. Location + phone/book CTA.
+
+LENGTH LAW — NON-NEGOTIABLE: Every description MUST be 140–155 characters. Count carefully. Under 140 = add more. Over 155 = trim.
+No two variants share an opening word. Zero repeated phrases. Every word earns its place.
+
+Return ONLY this JSON (no markdown, no explanation):
+{"variants":[
+  {"label":"AIDA – Attention Hook","text":"140-155 chars"},
+  {"label":"AIDA – Speed & Convenience","text":"140-155 chars"},
+  {"label":"AIDA – Trust & Credibility","text":"140-155 chars"},
+  {"label":"AIDA – Urgency & Action","text":"140-155 chars"}
+]}`,
+
+  // ── Template 2: Problem → Agitate → Solve (PAS) ─────────────────────────────
+  (title, loc) => `You are an expert local SEO copywriter specializing in waste management and construction services. Use the PAS copywriting method.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+TARGET KEYWORDS FOR THIS BATCH (weave naturally):
+cheap dumpster rental near me, debris removal service, construction waste disposal,
+bin rental same day, affordable roll-off containers, yard waste dumpster,
+concrete disposal, renovation debris, estate cleanout dumpster, commercial waste hauling.
+
+WRITE 4 META DESCRIPTIONS using these distinct angles:
+V1 "Problem-Led": Identify a real pain point (overflowing debris, project delays, hauling hassle). Immediately pivot to solution.
+V2 "Agitate": Amplify the cost/risk of NOT renting a dumpster. Then introduce your service as the obvious fix.
+V3 "Solve – Price": Lead with affordability and transparent pricing. No hidden fees angle. Include sizes/location.
+V4 "Solve – Speed": Lead with same-day or next-day availability. Emphasize fast delivery + reliable pickup.
+
+LENGTH LAW: 140–155 characters EACH. Count every character. Do not go under 140 — it wastes ranking potential.
+Unique opening word per variant. No recycled phrases.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Problem-Led Copy","text":"140-155 chars"},
+  {"label":"Agitate the Pain","text":"140-155 chars"},
+  {"label":"Solve – Best Price","text":"140-155 chars"},
+  {"label":"Solve – Fastest Delivery","text":"140-155 chars"}
+]}`,
+
+  // ── Template 3: Keyword-First + Commercial Intent ────────────────────────────
+  (title, loc) => `You are a technical SEO specialist writing high-CTR meta descriptions for a dumpster rental company targeting commercial and construction clients.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+HIGH-INTENT COMMERCIAL KEYWORDS (use across variants, never repeat the same keyword twice):
+commercial dumpster rental, construction dumpster service, roll-off bin rental,
+contractor dumpster, debris box rental, waste container rental, demolition dumpster,
+roofing tear-off disposal, concrete & asphalt disposal, large dumpster rental,
+20-yard 30-yard 40-yard dumpster, job site waste management, bulk trash removal.
+
+V1 "Commercial/Contractor Focus": Speak directly to contractors. Job site, bulk quantities, flexible scheduling.
+V2 "Size & Capacity": Lead with dumpster sizes (10, 15, 20, 30, 40 yard). Match size to job type. Location included.
+V3 "Full-Service Angle": Emphasize end-to-end service: delivery + pickup + disposal. No contractor hassle.
+V4 "Competitive Rate + Location": Best-price signal. Compare value. Location + ZIP. Call or book CTA.
+
+LENGTH LAW: 140–155 characters. Every variant. Mandatory. Under 140 = failure. Over 155 = trim.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Commercial & Contractor","text":"140-155 chars"},
+  {"label":"Size & Capacity Guide","text":"140-155 chars"},
+  {"label":"Full-Service Rental","text":"140-155 chars"},
+  {"label":"Best Rate + Location","text":"140-155 chars"}
+]}`,
+
+  // ── Template 4: Residential + Home Project Focus ─────────────────────────────
+  (title, loc) => `You are a local SEO content strategist writing meta descriptions for residential dumpster rental customers doing home cleanouts, remodels, or yard projects.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+RESIDENTIAL HIGH-SEARCH KEYWORDS (distribute across 4 variants):
+home cleanout dumpster, residential junk removal, garage cleanout, estate cleanout,
+basement cleanout dumpster, yard waste removal, landscaping debris, moving cleanout,
+remodel dumpster rental, home renovation waste, small dumpster rental, 10-yard 15-yard dumpster,
+weekend dumpster rental, affordable bin rental, same-day dumpster residential.
+
+V1 "Home Project Hero": Speak to homeowners tackling remodels or cleanouts. Mention ease + affordability.
+V2 "Estate & Cleanout Specialist": Target estate sales, moving cleanouts, hoarding situations. Sensitive + solution-focused.
+V3 "Yard & Landscaping": Yard waste, tree debris, landscaping projects. Green/eco disposal angle.
+V4 "Weekend Warrior": DIY home projects, weekend rentals, flexible pickup. Fast and affordable.
+
+LENGTH LAW: Every description = 140–155 characters. Non-negotiable.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Home Remodel & Cleanout","text":"140-155 chars"},
+  {"label":"Estate & Moving Cleanout","text":"140-155 chars"},
+  {"label":"Yard & Landscaping Waste","text":"140-155 chars"},
+  {"label":"Weekend DIY Rental","text":"140-155 chars"}
+]}`,
+
+  // ── Template 5: Trust + Reviews + Local Authority ────────────────────────────
+  (title, loc) => `You are a reputation-marketing SEO writer. Write 4 meta descriptions that build instant trust using social proof, local authority, and credibility signals.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+TRUST & SOCIAL PROOF KEYWORDS:
+top-rated dumpster rental, 5-star dumpster service, locally owned, family-owned,
+licensed and insured, BBB accredited, hundreds of satisfied customers, 10+ years experience,
+Google-rated, fastest dumpster in [city], trusted local waste removal, eco-friendly disposal,
+certified waste hauler, no hidden fees guaranteed, free quote.
+
+V1 "Star Rating Lead": Open with a rating/review signal. Include location + service type. Strong CTA.
+V2 "Years in Business": Lead with experience (10+ years, serving [city] since [decade]). Reliability focus.
+V3 "Eco & Compliance": Lead with responsible disposal, recycling, eco-friendly credentials. Trust + green.
+V4 "Guarantee Focus": Open with a guarantee (no hidden fees, on-time delivery guaranteed). Location + CTA.
+
+LENGTH LAW: 140–155 characters. Every variant. Mandatory.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"5-Star Social Proof","text":"140-155 chars"},
+  {"label":"Experience & Authority","text":"140-155 chars"},
+  {"label":"Eco-Friendly Disposal","text":"140-155 chars"},
+  {"label":"Guarantee & Transparency","text":"140-155 chars"}
+]}`,
+
+  // ── Template 6: Question-Led / Conversational ────────────────────────────────
+  (title, loc) => `You are a conversion-focused SEO copywriter. Write 4 meta descriptions using conversational, question-led, or story-driven hooks that stop the scroll in search results.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+CONVERSION KEYWORDS TO USE:
+need a dumpster fast, looking for dumpster rental, how to rent a dumpster, dumpster rental prices,
+best dumpster rental company, dumpster rental for contractors, rent a roll-off container,
+skip the hassle, easy online booking, instant dumpster quote, flat-rate dumpster rental,
+same-day roll-off delivery, junk gone fast, cleanup made easy.
+
+V1 "Question Hook": Start with a question the searcher is asking themselves. Answer it in the same description.
+V2 "Story/Scenario": Paint a 1-sentence scenario (renovation mess, yard piled with debris). Then solve it.
+V3 "How-To Lead": "Here's how to get a dumpster in [city] today…" — process simplification angle.
+V4 "Flat Rate Hero": Lead with transparent, flat-rate pricing. No surprise fees. Easy booking. CTA.
+
+LENGTH LAW: 140–155 characters. Every variant. No exceptions.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Question-Led Hook","text":"140-155 chars"},
+  {"label":"Scenario & Solution","text":"140-155 chars"},
+  {"label":"How-To Simplify","text":"140-155 chars"},
+  {"label":"Flat-Rate Pricing Hero","text":"140-155 chars"}
+]}`,
+
+  // ── Template 7: Speed + Same-Day Delivery Focus ──────────────────────────────
+  (title, loc) => `You are a local SEO expert writing high-urgency meta descriptions for a dumpster rental company with same-day and next-day delivery capability.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+URGENCY & SPEED KEYWORDS:
+same-day dumpster delivery, next-day roll-off rental, dumpster in 24 hours,
+fast dumpster rental, emergency dumpster rental, quick dumpster service,
+delivered today, on-time dumpster guarantee, rapid debris removal, urgent cleanout,
+flexible rental period, easy drop-off pickup scheduling, call now for same-day.
+
+V1 "Same-Day Hero": Lead with same-day delivery as the #1 benefit. Location + size range + CTA.
+V2 "Emergency/Urgent Angle": Target customers with urgent cleanup needs. Immediate response, no wait.
+V3 "Scheduler's Dream": Flexible scheduling, pick your drop-off and pickup date. Convenience focused.
+V4 "Speed + Price": Combine fastest delivery with best-price signal. Short no-hassle process. CTA.
+
+LENGTH LAW: 140–155 characters per variant. Count precisely.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Same-Day Delivery","text":"140-155 chars"},
+  {"label":"Emergency Cleanup","text":"140-155 chars"},
+  {"label":"Flexible Scheduling","text":"140-155 chars"},
+  {"label":"Fast & Affordable","text":"140-155 chars"}
+]}`,
+
+  // ── Template 8: Price + Value Comparison ─────────────────────────────────────
+  (title, loc) => `You are a performance marketing copywriter specializing in local services. Write 4 meta descriptions focused on pricing, value, and competitive differentiation.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+PRICE & VALUE KEYWORDS:
+cheap dumpster rental, affordable dumpster rental, low-cost roll-off rental,
+best dumpster rental prices, dumpster rental deals, flat-rate dumpster no hidden fees,
+dumpster rental specials, free delivery dumpster rental, cost-effective waste removal,
+beat any competitor price, price match guarantee, transparent dumpster pricing,
+budget-friendly junk removal, dumpster rental under $300.
+
+V1 "Lowest Price Guarantee": Lead with price confidence. Mention flat-rate or price-match. Location.
+V2 "No Hidden Fees": Transparency focus. All-inclusive pricing. No surprises. Trust signal.
+V3 "Value Stacked": Show all included in the price: delivery + rental days + pickup + disposal. Location.
+V4 "Competitor Comparison": Subtle "why pay more?" angle. Best rate in [city]. CTA to call/book.
+
+LENGTH LAW: 140–155 characters per variant. Every one.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Lowest Price Lead","text":"140-155 chars"},
+  {"label":"No Hidden Fees","text":"140-155 chars"},
+  {"label":"Value-Stacked Offer","text":"140-155 chars"},
+  {"label":"Beat the Competition","text":"140-155 chars"}
+]}`,
+
+  // ── Template 9: Construction + Demolition Niche ──────────────────────────────
+  (title, loc) => `You are a B2B SEO copywriter targeting general contractors, demolition crews, roofers, and property managers who need reliable dumpster rental service.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+B2B CONSTRUCTION KEYWORDS:
+construction site dumpster rental, demolition dumpster, roofing debris dumpster,
+contractor roll-off rental, concrete disposal service, heavy debris dumpster,
+masonry waste removal, drywall disposal dumpster, remodeling debris container,
+property management waste solution, bulk demolition waste, monthly dumpster contract,
+multi-drop contractor account, job site cleanup service.
+
+V1 "Contractor Direct": Speak to contractors. Job site delivery, bulk capacity, account billing.
+V2 "Demolition/Roofing Specialty": Heavy materials — concrete, asphalt, shingles. Weight-appropriate containers.
+V3 "Property Manager": Apartment complex, commercial property, bulk ongoing service. Account setup.
+V4 "Project Scale": Large-scale project waste. Multiple containers, coordinated logistics, priority service.
+
+LENGTH LAW: 140–155 characters per variant. No shorter. No longer.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Contractor & Job Site","text":"140-155 chars"},
+  {"label":"Demolition & Roofing","text":"140-155 chars"},
+  {"label":"Property Management","text":"140-155 chars"},
+  {"label":"Large-Scale Projects","text":"140-155 chars"}
+]}`,
+
+  // ── Template 10: Emotional + Community + Local Pride ─────────────────────────
+  (title, loc) => `You are a brand storytelling SEO writer. Write 4 meta descriptions with emotional resonance, community connection, and local identity for a dumpster rental company.
+
+Page title: "${title}"
+Location context: ${loc}
+Session salt: ${_salt()}
+
+LOCAL + EMOTIONAL KEYWORDS:
+locally owned dumpster rental, serving [city] families, community dumpster rental,
+neighbors helping neighbors, [city]'s most trusted, proudly serving [state],
+family-owned waste removal, supporting local business, dumpster company [city] loves,
+your neighborhood dumpster service, [city] cleanup crew, locally operated, people-first service.
+
+V1 "Local Pride": Lead with deep local identity. Serving this specific city/area for years. Warm + credible.
+V2 "Community Mission": Frame dumpster rental as helping the community stay clean. Feel-good + practical.
+V3 "Family Business": Personal touch. Family-owned, neighbor-to-neighbor trust. No corporate runaround.
+V4 "Hyperlocal + Service": Ultra-local (mention ZIP or neighborhood). Fastest response in the area. CTA.
+
+LENGTH LAW: 140–155 characters per variant. Mandatory. Count carefully.
+
+Return ONLY this JSON:
+{"variants":[
+  {"label":"Local Pride & Identity","text":"140-155 chars"},
+  {"label":"Community Mission","text":"140-155 chars"},
+  {"label":"Family-Owned Trust","text":"140-155 chars"},
+  {"label":"Hyperlocal Service","text":"140-155 chars"}
+]}`
+
+];
+
+// Salt generator — ensures Groq never serves cached responses
+function _salt() {
+  return `[${Date.now()}-${Math.random().toString(36).slice(2,9)}]`;
+}
+
+// Extract location context from title for better prompt personalization
+function _extractLocation(title) {
+  // Try to pull "City, ST ZIP" or "City ST" patterns
+  const m = title.match(/([A-Z][a-zA-Z\s]+),?\s+([A-Z]{2})\s*(\d{5})?/);
+  if (m) return `City: ${m[1].trim()}, State: ${m[2]}${m[3] ? ', ZIP: ' + m[3] : ''}`;
+  return `Extracted from title: "${title}" — use whatever location info is present`;
+}
+
+// Track last used template index to prevent immediate repeats
+let _lastTemplateIdx = -1;
+
 // ── Groq API call ─────────────────────────────────────────────────────────────
 async function callGroq(apiKey, title) {
-  // Inject random token so every call produces fresh output
-  const nonce = Math.random().toString(36).slice(2, 10) + Date.now();
+  // Pick a random template, never the same one twice in a row
+  let idx;
+  do { idx = Math.floor(Math.random() * PROMPT_TEMPLATES.length); }
+  while (idx === _lastTemplateIdx);
+  _lastTemplateIdx = idx;
 
-  const prompt = `You are a senior SEO copywriter for local service businesses (dumpster rental, junk removal, moving, HVAC, plumbing, etc). Session: ${nonce}
-
-Generate EXACTLY 4 unique meta descriptions for this page title:
-"${title}"
-
-STRICT LENGTH RULE — THIS IS CRITICAL:
-- Each description MUST be between 140 and 155 characters INCLUSIVE
-- Count every character including spaces and punctuation
-- If a draft is under 140 chars, ADD more detail (benefits, location specifics, urgency words)
-- If a draft is over 155 chars, trim it — never exceed 155
-- DO NOT write short 40-80 character descriptions — they are USELESS for SEO
-
-CONTENT RULES:
-- Each variant must use a COMPLETELY different angle, tone, and sentence structure
-- Do NOT start any two variants with the same word
-- Extract and use the city name, state, and ZIP code from the title naturally
-- Every variant needs ONE strong CTA (call to action)
-- No filler words; make every character count
-- ZERO repeated phrases across the 4 variants
-
-VARIANT ANGLES (follow strictly):
-1. "Action + Local + CTA" — Start with an imperative verb (Rent, Get, Book, Need, Order). Lead with the service + location. Close with urgency CTA. Pack in 2-3 benefits.
-2. "Benefit-Driven + Trust" — Open with a customer benefit or value prop. Mention pricing signal (affordable, low-cost, competitive rates). Add trust word (reliable, licensed, insured). End with CTA.
-3. "Keyword-Dense + Service" — Front-load primary keywords. Mention dumpster sizes (10, 15, 20, 30, 40 yard) or service variants. Specify residential AND commercial. Include location. CTA at end.
-4. "Social Proof + Urgency" — Start with a trust/authority signal (Top-rated, Trusted by, #1 in, 500+ customers). Add a scarcity or urgency element (limited availability, same-day, book today). Include location.
-
-RESPOND ONLY WITH VALID JSON — no markdown fences, no explanation, no preamble:
-{"variants":[
-  {"label":"Action + Local + CTA","text":"EXACTLY 140-155 chars here"},
-  {"label":"Benefit-Driven + Trust","text":"EXACTLY 140-155 chars here"},
-  {"label":"Keyword-Dense + Service","text":"EXACTLY 140-155 chars here"},
-  {"label":"Social Proof + Urgency","text":"EXACTLY 140-155 chars here"}
-]}`;
+  const loc = _extractLocation(title);
+  const prompt = PROMPT_TEMPLATES[idx](title, loc);
 
   const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -701,6 +984,16 @@ async function generate() {
 
   document.getElementById('variantsGrid').innerHTML = html;
   document.getElementById('output').style.display = 'block';
+
+  // Show which prompt template was used (for transparency)
+  const templateNames = [
+    'AIDA Framework','PAS Framework','Commercial Intent','Residential Focus',
+    'Trust & Reviews','Conversational','Speed & Urgency','Price & Value',
+    'Construction Niche','Local & Community'
+  ];
+  document.getElementById('templateBadge').textContent =
+    `· Strategy: ${templateNames[_lastTemplateIdx]} (#${_lastTemplateIdx + 1}/10)`;
+
   document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
